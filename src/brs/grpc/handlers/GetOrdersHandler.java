@@ -29,7 +29,7 @@ public class GetOrdersHandler implements GrpcApiHandler<BrsApi.GetOrdersRequest,
                             .forEach(order -> builder.addOrders(ProtoBuilder.buildOrder(order)));
                     break;
                 case BID:
-                    assetExchange.getAllAskOrders(firstIndex, lastIndex)
+                    assetExchange.getAllBidOrders(firstIndex, lastIndex)
                             .forEach(order -> builder.addOrders(ProtoBuilder.buildOrder(order)));
                     break;
                 default:

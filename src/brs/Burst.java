@@ -42,11 +42,12 @@ import java.util.regex.Pattern;
 
 public final class Burst {
 
-  public static final Version VERSION = Version.parse("v2.5.0");
+  public static final Version VERSION = Version.parse("v2.5.0-beta2");
   public static final Version MIN_VERSION = Version.parse("v2.3.0");
 
   public static final String APPLICATION = "BRS";
 
+  public static final String CONF_FOLDER = "./conf";
   public static final String DEFAULT_PROPERTIES_NAME = "brs-default.properties";
   public static final String PROPERTIES_NAME = "brs.properties";
 
@@ -73,34 +74,19 @@ public final class Burst {
     final Properties defaultProperties = new Properties();
 
     logger.info("Initializing Burst Reference Software (BRS) version {}", VERSION);
-    try (InputStream is = ClassLoader.getSystemResourceAsStream(DEFAULT_PROPERTIES_NAME)) {
-      if (is != null) {
-        defaultProperties.load(is);
-      } else {
-        String configFile = System.getProperty(DEFAULT_PROPERTIES_NAME);
-
-        if (configFile != null) {
-          try (InputStream fis = new FileInputStream(configFile)) {
-            defaultProperties.load(fis);
-          } catch (IOException e) {
-            throw new RuntimeException("Error loading " + DEFAULT_PROPERTIES_NAME + " from " + configFile);
-          }
-        } else {
-          throw new RuntimeException(DEFAULT_PROPERTIES_NAME + " not in classpath and system property " + DEFAULT_PROPERTIES_NAME + " not defined either");
-        }
-      }
+    try (InputStream is = new FileInputStream(new File(CONF_FOLDER, DEFAULT_PROPERTIES_NAME))) {
+       defaultProperties.load(is);
     } catch (IOException e) {
       throw new RuntimeException("Error loading " + DEFAULT_PROPERTIES_NAME, e);
     }
 
-    Properties properties;
-    try (InputStream is = ClassLoader.getSystemResourceAsStream(PROPERTIES_NAME)) {
-      properties = new Properties(defaultProperties);
+    Properties properties = new Properties(defaultProperties);
+    try (InputStream is = new FileInputStream(new File(CONF_FOLDER, PROPERTIES_NAME))) {
       if (is != null) { // parse if brs.properties was loaded
         properties.load(is);
       }
     } catch (IOException e) {
-      throw new RuntimeException("Error loading " + PROPERTIES_NAME, e);
+      logger.info("Custom user properties file {} not loaded", PROPERTIES_NAME);
     }
 
     return new PropertyServiceImpl(properties);

@@ -2,11 +2,15 @@ package brs.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+
+import brs.Burst;
 
 /**
  * Handle logging for the Burst node server
@@ -42,18 +46,21 @@ public final class LoggerConfigurator {
       try {
         boolean foundProperties = false;
         Properties loggingProperties = new Properties();
-        try (InputStream is = ClassLoader.getSystemResourceAsStream("logging-default.properties")) {
+        try (InputStream is = new FileInputStream(new File(Burst.CONF_FOLDER, "logging-default.properties"))) {
           if (is != null) {
             loggingProperties.load(is);
             foundProperties = true;
           }
         }
-        try (InputStream is = ClassLoader.getSystemResourceAsStream("logging.properties")) {
+        try (InputStream is = new FileInputStream(new File(Burst.CONF_FOLDER, "logging.properties"))) {
           if (is != null) {
             loggingProperties.load(is);
             foundProperties = true;
           }
         }
+        catch (Exception e) {
+        	logger.info("Custom user logging.properties not loaded");
+		}
         if (foundProperties) {
           ByteArrayOutputStream outStream = new ByteArrayOutputStream();
           loggingProperties.store(outStream, "logging properties");

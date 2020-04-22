@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.URI;
-import java.net.URL;
 import java.security.Permission;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -249,18 +248,16 @@ public class BurstGUI extends JFrame {
     }
     
     private void editConf() {
-    	URL configFile = ClassLoader.getSystemResource(Burst.PROPERTIES_NAME);
-    	File file = new File(configFile.getFile());
+    	File file = new File(Burst.CONF_FOLDER, Burst.PROPERTIES_NAME);
     	if(!file.exists()) {
-        	configFile = ClassLoader.getSystemResource(Burst.DEFAULT_PROPERTIES_NAME);
-        	file = new File(configFile.getFile());
+        	file = new File(Burst.CONF_FOLDER, Burst.DEFAULT_PROPERTIES_NAME);
         	if(!file.exists()) {
         		file = new File(Burst.DEFAULT_PROPERTIES_NAME);
         	}
     	}
     	
     	if(!file.exists()) {
-    		JOptionPane.showMessageDialog(this, "Could not find conf file: " + configFile, "File not found", JOptionPane.ERROR_MESSAGE);
+    		JOptionPane.showMessageDialog(this, "Could not find conf file: " + Burst.DEFAULT_PROPERTIES_NAME, "File not found", JOptionPane.ERROR_MESSAGE);
     		return;
     	}
     	try {

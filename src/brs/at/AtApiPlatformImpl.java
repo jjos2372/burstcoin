@@ -250,6 +250,10 @@ public class AtApiPlatformImpl extends AtApiImpl {
 
         b.put(Burst.getBlockchain().getBlockAtHeight(state.getHeight() - 1).getGenerationSignature());
 
+        if (Burst.getFluxCapacitor().getValue(FluxValues.NEXT_FORK)) {
+            b.clear();
+        }
+
         byte[] temp = new byte[8];
 
         b.get(temp, 0, 8);

@@ -525,8 +525,11 @@ public class AtApiImpl implements AtApi {
         mdb.order(ByteOrder.LITTLE_ENDIAN);
 
         state.setB1(AtApiHelper.getByteArray(mdb.getLong(0)));
-        state.setB1(AtApiHelper.getByteArray(mdb.getLong(8)));
-
+        if (Burst.getFluxCapacitor().getValue(FluxValues.NEXT_FORK)) {
+            state.setB2(AtApiHelper.getByteArray(mdb.getLong(8)));
+        } else {
+            state.setB1(AtApiHelper.getByteArray(mdb.getLong(8)));
+        }
     }
 
 

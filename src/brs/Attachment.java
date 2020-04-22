@@ -2270,7 +2270,7 @@ public interface Attachment extends Appendix {
     public Any getProtobufMessage() {
       return Any.pack(BrsApi.EscrowResultAttachment.newBuilder()
               .setVersion(getVersion())
-              .setEscrow(2)
+              .setEscrow(this.escrowId)
               .setDecision(Escrow.decisionToProtobuf(decision))
               .build());
     }
