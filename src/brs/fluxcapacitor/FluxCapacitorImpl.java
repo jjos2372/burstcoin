@@ -6,6 +6,7 @@ import brs.props.Props;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FluxCapacitorImpl implements FluxCapacitor {
 
@@ -13,7 +14,7 @@ public class FluxCapacitorImpl implements FluxCapacitor {
     private final Blockchain blockchain;
 
     // Map of Flux Value -> Change Height -> Index of ValueChange in FluxValue. Used as a cache.
-    private final Map<FluxValue<?>, Map<Integer, Integer>> valueChangesPerFluxValue = new HashMap<>();
+    private final Map<FluxValue<?>, Map<Integer, Integer>> valueChangesPerFluxValue = new ConcurrentHashMap<>();
 
     public FluxCapacitorImpl(Blockchain blockchain, PropertyService propertyService) {
         this.propertyService = propertyService;

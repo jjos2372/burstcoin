@@ -5,6 +5,8 @@ import brs.db.ValuesTable;
 import brs.db.store.DerivedTableManager;
 import org.jooq.DSLContext;
 import org.jooq.Record;
+import org.jooq.RecordMapper;
+import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.jooq.impl.TableImpl;
 
@@ -41,11 +43,18 @@ public abstract class ValuesSqlTable<T,V> extends DerivedSqlTable implements Val
           return values;
         }
       }
-      values = ctx.selectFrom(tableClass)
-              .where(dbKey.getPKConditions(tableClass))
-              .and(multiversion ? latestField.isTrue() : DSL.noCondition())
-              .orderBy(tableClass.field("db_id").desc())
-              .fetch(record -> load(ctx, record));
+      // Fix needed by Java > 8, lambda expression generated an exception:
+      Result<?> r = ctx.selectFrom(tableClass)
+            .where(dbKey.getPKConditions(tableClass))
+            .and(multiversion ? latestField.isTrue() : DSL.noCondition())
+            .orderBy(tableClass.field("db_id").desc())
+            .fetch();
+      values = r.map(new RecordMapper<Record, V>() {
+		@Override
+		public V map(Record record) {
+			return load(ctx, record);
+		}
+	  });
       if (Db.isInTransaction()) {
         Db.getCache(table).put(dbKey, values);
       }

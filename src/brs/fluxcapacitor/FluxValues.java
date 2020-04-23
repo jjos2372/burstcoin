@@ -1,5 +1,7 @@
 package brs.fluxcapacitor;
 
+import brs.Version;
+
 public class FluxValues {
     private FluxValues() {
     }
@@ -19,4 +21,6 @@ public class FluxValues {
 
     public static final FluxValue<Integer> MAX_NUMBER_TRANSACTIONS = new FluxValue<>(255, new FluxValue.ValueChange<>(HistoricalMoments.PRE_POC2, 1020));
     public static final FluxValue<Integer> MAX_PAYLOAD_LENGTH = new FluxValue<>(255 * 176, new FluxValue.ValueChange<>(HistoricalMoments.PRE_POC2, 1020 * 176));
+    
+    public static final FluxValue<Version> MIN_PEER_VERSION = new FluxValue<>(Version.parse("2.3.0"), new FluxValue.ValueChange<>(HistoricalMoments.LN_TIME, Version.parse("2.4.9")));
 }

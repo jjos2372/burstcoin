@@ -15,7 +15,6 @@ import brs.deeplink.DeeplinkQRCodeGenerator;
 import brs.feesuggestions.FeeSuggestionCalculator;
 import brs.fluxcapacitor.FluxCapacitor;
 import brs.fluxcapacitor.FluxCapacitorImpl;
-import brs.fluxcapacitor.FluxValues;
 import brs.grpc.proto.BrsService;
 import brs.http.API;
 import brs.http.APITransactionManager;
@@ -42,8 +41,7 @@ import java.util.regex.Pattern;
 
 public final class Burst {
 
-  public static final Version VERSION = Version.parse("v2.5.0-beta2");
-  public static final Version MIN_VERSION = Version.parse("v2.3.0");
+  public static final Version VERSION = Version.parse("v2.5.0-beta5");
 
   public static final String APPLICATION = "BRS";
 
@@ -120,21 +118,14 @@ public final class Burst {
     init();
   }
 
-  private static void validateVersionNotDev(PropertyService propertyService) {
+  private static boolean validateVersionNotDev(PropertyService propertyService) {
     if(VERSION.isPrelease() && !propertyService.getBoolean(Props.DEV_TESTNET)) {
-      logger.error("THIS IS A DEVELOPMENT WALLET, PLEASE DO NOT USE THIS");
-      System.exit(0);
+      logger.error("THIS IS A DEVELOPMENT VERSION, PLEASE DO NOT USE THIS ON MAINNET");
+      return false;
     }
+    return true;
   }
   
-  public static Version getMinVersion() {
-	// TODO: this is not needed but can help to split the network
-	// in two after the hard-fork
-	if (Burst.getFluxCapacitor().getValue(FluxValues.LN_TIME))
-	  return VERSION;
-	return MIN_VERSION;
-  }
-
   public static void init(Properties customProperties) {
     loadWallet(new PropertyServiceImpl(customProperties));
   }
@@ -144,8 +135,11 @@ public final class Burst {
   }
 
   private static void loadWallet(PropertyService propertyService) {
-    validateVersionNotDev(propertyService);
+    LoggerConfigurator.init();
+
     Burst.propertyService = propertyService;
+	if(!validateVersionNotDev(propertyService))
+		return;
 
     try {
       long startTime = System.currentTimeMillis();
@@ -158,8 +152,6 @@ public final class Burst {
       dbCacheManager = new DBCacheManagerImpl(statisticsManager);
 
       threadPool = new ThreadPool(propertyService);
-
-      LoggerConfigurator.init();
 
       Db.init(propertyService, dbCacheManager);
       dbs = Db.getDbsByDatabaseType();

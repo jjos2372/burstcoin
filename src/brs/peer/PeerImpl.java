@@ -2,6 +2,7 @@ package brs.peer;
 
 import brs.*;
 import brs.crypto.Crypto;
+import brs.fluxcapacitor.FluxValues;
 import brs.props.Props;
 import brs.util.Convert;
 import brs.util.CountingInputStream;
@@ -142,7 +143,7 @@ final class PeerImpl implements Peer {
     if (Burst.APPLICATION.equals(getApplication()) && version != null) {
       try {
         this.version.set(Version.parse(version));
-        isOldVersion.set(Burst.getMinVersion().isGreaterThan(this.version.get()));
+        isOldVersion.set(Burst.getFluxCapacitor().getValue(FluxValues.MIN_PEER_VERSION).isGreaterThan(this.version.get()));
       } catch (IllegalArgumentException e) {
         isOldVersion.set(true);
       }
